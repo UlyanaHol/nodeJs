@@ -1,5 +1,14 @@
+const express = require('express');
+const app = express();
+
+app.listen(3000, () => {
+    console.log('Server has started on port 3000...');
+});
+
+app.get('/', (req, res) => {
+    res.end(meetups[0].show());
+});
 //логика приложения, без базы данных пока
-let meetups = [];
 class MeetUp {
     //конструктор
     constructor(id, title, description, tags, timeAndLocation) {
@@ -21,5 +30,4 @@ class MeetUp {
     }
 }
 
-meetups.push(new MeetUp(1, 'аолптлвал', 'адаплвд', ['cool', 'super'], '13.06.2023'));
-meetups[0].show();
+let meetups = [new MeetUp(1, 'ksdfldkf', 'dnjksnjdkf', ['cool', 'super'], '13 Aug London'), new MeetUp(2, 'ksdfldkf', 'dnjksnjdkf', ['cool', 'super'], '13 Aug London')];
