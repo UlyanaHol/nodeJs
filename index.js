@@ -5,8 +5,20 @@ app.listen(3000, () => {
     console.log('Server has started on port 3000...');
 });
 
+//получение списка всех митапов
 app.get('/', (req, res) => {
-    res.end(meetups[0].show());
+    meetups.forEach(meetup => {
+        res.send(meetup.show());
+    });
+});
+
+//получение элемента по id
+app.get('/:id', (req, res) => {
+    meetups.forEach(el => {
+        if (el.id == req.params.id) {
+            res.send(el);
+        }
+    });
 });
 //логика приложения, без базы данных пока
 class MeetUp {
