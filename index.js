@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
-const formidable = require('formidable');
+const bodyParser = require('body-parser');
+
+let jsonParser = bodyParser.json();
+let urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 app.listen(3000, () => {
     console.log('Server has started on port 3000...');
@@ -21,33 +24,24 @@ app.get('/meetups/:id', (req, res) => {
 });
 
 //регистрация нового митапа
-app.post('/meetups', (req, res) => {
-    //req.body
-    const form = formidable({ multiples: true });
-    form.parse(req, (err, fields, files) => {
-        let m = new MeetUp(fields.get(id));
-        meetups.push(m);
-        res.status(204);
-        res.end();
-    });
-});
+app.post('/meetups', jsonParser, (req, res) => {
+    let m = new MeetUp(req.body.id, req.body.title, req.body.description, req.body.tags, req.body.timeAndLocation);
+    meetups.push(m);
+    res.sendStatus(200);
+}
+);
 
 //изменение записи
-app.put('/meetups/:id', (req, res) => {
-    meetups.forEach(el => {
+app.put('/meetups/:id', jsonParser, (req, res) => {
+    meetups.forEach((el, index) => {
         if (el.id == req.params.id) {
-            form.parse(req, (err, fields, files) => {
-                el.title = fields.get('id').title;
-                el.description = fields.get('id').description;
-                el.tags = fields.get('id').tags;
-                el.timeAndLocation = fields.get('id').timeAndLocation;
-                res.status(201);
-                res.end();
-            });
+            meetups.splice(index, 1, new MeetUp(req.body.id, req.body.title, req.body.description, req.body.tags, req.body.timeAndLocation));
         }
     });
+    res.sendStatus(201);
 });
 
+//удаление записи
 app.delete('/meetups/:id', (req, res) => {
     meetups.forEach((el, index) => {
         if (el.id == req.params.id) {
