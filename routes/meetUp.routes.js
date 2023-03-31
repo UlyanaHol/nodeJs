@@ -3,9 +3,9 @@ const router = new Router();
 const meetUpController = require('../controller/meetup.controller');
 
 router.post('/meetup', meetUpController.createMeetup);
+router.get('/meetup', meetUpController.showMeetups);
+router.get('/meetup/:id', meetUpController.getMeetupById);
 /*
-router.get('/meetUp', meetUpController.createMeetup);
-router.get('/meetUp', meetUpController.createMeetup);
 router.put('/meetUp', meetUpController.createMeetup);
 router.delete('/meetUp', meetUpController.createMeetup);
 */

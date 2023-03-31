@@ -8,6 +8,17 @@ class MeetUpController {
         let m = new MeetUp(newMeetUp.rows[0].id, title, descr, tags, timeAndLocation);
         res.json(m);
     }
+
+    async showMeetups(req, res) {
+        const meetups = await db.query('SELECT * FROM meetup');
+        res.json(meetups.rows);
+    }
+
+    async getMeetupById(req, res) {
+        const id = req.params.id;
+        const meetup = await db.query('SELECT * FROM meetup WHERE id = $1', [id]);
+        res.json(meetup.rows[0]);
+    }
 }
 
 class MeetUp {
