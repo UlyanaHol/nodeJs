@@ -1,7 +1,8 @@
-create TABLE meetup(
+create TABLE meetups (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255),
     descr VARCHAR(255),
     tags VARCHAR(30)[],
-    timeAndLocation VARCHAR(255)
+    timeAndDate TIMESTAMP(6),
+    place VARCHAR(255)
 );
