@@ -6,3 +6,10 @@ create TABLE meetups (
     timeAndDate TIMESTAMP(6),
     place VARCHAR(255)
 );
+
+create TABLE users (
+    id SERIAL PRIMARY KEY,
+    loginUser VARCHAR(255),
+    meetup_id INTEGER,
+    FOREIGN KEY (meetup_id) REFERENCES meetups (id)
+);
