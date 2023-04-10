@@ -7,9 +7,15 @@ create TABLE meetups (
     place VARCHAR(255)
 );
 
+create TABLE participants (
+    user_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    meetup_id INTEGER,
+    FOREIGN KEY (meetup_id) REFERENCES meetups (id)
+);
+
 create TABLE users (
     id SERIAL PRIMARY KEY,
     loginUser VARCHAR(255),
-    meetup_id INTEGER,
-    FOREIGN KEY (meetup_id) REFERENCES meetups (id)
+    passwordUser VARCHAR(255)
 );
