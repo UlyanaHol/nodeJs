@@ -1,47 +1,48 @@
+const { secret } = require("../config");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const db = require('../db.js');
+
+const generateAccessToken = (id) => {
+    const payload = {
+        id
+    }
+    return jwt.sign(payload, secret, { expiresIn: "24h" })
+}
+
 class authController {
     async registration(req, res) {
-        const {loginUser, passwordUser} = req.body;
-        const newUser = await db.query("INSERT INTO users (loginUser, passwordUser) VALUES ($1, $2) RETURNING id", [loginUser, passwordUser]);
-        let user = new User(newUser.rows[0].id, loginUser, passwordUser);
+        const { loginUser, passwordUser } = req.body;
+        const candidate = await db.query('SELECT * FROM users WHERE loginUser = $1', [loginUser]);
+        const hashPassword = bcrypt.hashSync(passwordUser, 7);
+        const newUser = await db.query("INSERT INTO users (loginUser, passwordUser) VALUES ($1, $2) RETURNING id", [loginUser, hashPassword]);
+        let user = new User(newUser.rows[0].id, loginUser, hashPassword);
         res.json(user);
     }
 
 
-    /*
     async login(req, res) {
-        passport.authenticate(
-            'login',
-            async (err, user, info) => {
-                try {
-                    if (err || !user) {
-                        const error = new Error('An error occurred.');
-                        return next(error);
-                    }
-                    req.login(
-                        user,
-                        { session: false },
-                        async (error) => {
-                            if (error) return next(error);
-                            const body = { _id: user._id, loginUser: user.loginUser };
-                            const token = jwt.sign({ user: body }, 'TOP_SECRET');
-                            return res.json({ token });
-                        }
-                    );
-                } catch (error) {
-                    return next(error);
-                }
-            }
-        );
+        const { loginUser, passwordUser } = req.body;
+        const user = await db.query('SELECT * FROM users WHERE loginUser = $1', [loginUser]);
+        if (!user) {
+            return res.status(400).json({ message: `Пользователь ${loginUser} не найден` });
+        }
+        const validPassword = bcrypt.compareSync(passwordUser, user.rows[0].passworduser);
+        if (!validPassword) {
+            return res.status(400).json({ message: `Введен неверный пароль` })
+        }
+        const token = generateAccessToken(user._id);
+        return res.json({ token });
     }
 
-    async getUser(req, res) {
-        res.json({
-            message: 'You made it to the secure route',
-            user: req.user,
-            token: req.query.secret_token
-        });
+    async getUsers(req, res) {
+        try {
+            const users = await db.query('SELECT * FROM users');
+            res.json(users.rows)
+        } catch (e) {
+            console.log(e)
+        }
     }
-    */
 }
 
 class User {
