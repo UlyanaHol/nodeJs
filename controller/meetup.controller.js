@@ -35,6 +35,13 @@ class MeetUpController {
         res.status(200);
         res.json(meetup.rows[0]);
     }
+
+    async registration(req, res) {
+        const id_meetup = req.params.id;
+        const id_user = req.user.id;
+        const reg = await db.query('INSERT INTO participants (user_id, meetup_id) VALUES ($1, $2) RETURNING *', [id_user, id_meetup]);
+        res.send({message: 'Successful'});
+    }
 }
 
 class MeetUp {

@@ -1,23 +1,21 @@
-const { secret } = require("../config");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../db.js');
+const keys = require("../keys");
 
 const generateAccessToken = (id) => {
     const payload = {
         id
     }
-    return jwt.sign(payload, secret, { expiresIn: "24h" })
+    return jwt.sign(payload, keys.jwt, { expiresIn: "24h" })
 }
 
 class authController {
     async registration(req, res) {
         const { loginUser, passwordUser } = req.body;
-        const candidate = await db.query('SELECT * FROM users WHERE loginUser = $1', [loginUser]);
         const hashPassword = bcrypt.hashSync(passwordUser, 7);
         const newUser = await db.query("INSERT INTO users (loginUser, passwordUser) VALUES ($1, $2) RETURNING id", [loginUser, hashPassword]);
-        let user = new User(newUser.rows[0].id, loginUser, hashPassword);
-        res.json(user);
+        res.json('Complete');
     }
 
 
@@ -31,17 +29,8 @@ class authController {
         if (!validPassword) {
             return res.status(400).json({ message: `Введен неверный пароль` })
         }
-        const token = generateAccessToken(user._id);
-        return res.json({ token });
-    }
-
-    async getUsers(req, res) {
-        try {
-            const users = await db.query('SELECT * FROM users');
-            res.json(users.rows)
-        } catch (e) {
-            console.log(e)
-        }
+        let token = generateAccessToken(user.rows[0].id);
+        return res.json({token});
     }
 }
 
